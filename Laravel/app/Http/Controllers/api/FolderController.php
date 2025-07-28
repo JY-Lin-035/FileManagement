@@ -2,53 +2,55 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Helpers\ReturnHelper;
 use App\Services\FolderService;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 
 class FolderController extends Controller
 {
-    public function createFolder(Request $request)
+    public function createFolder(Request $request, FolderService $folderService)
     {
         $userID = $request->attributes->get('userId');
         $dir = $request->input('dir');
         $newName = $request->input('folderName');
 
-        // Log::info($dir);
-        // Log::info($originName);
-        // Log::info($newName);
-        $result = FolderService::create($userID, $dir, $newName);
-        return response()->json($result[0], $result[1]);
+        $result = $folderService->create($userID, $dir, $newName);
+
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->json($result['date'], $result['stateCode'])
+        );
     }
 
-    public function renameFolder(Request $request)
+    public function renameFolder(Request $request, FolderService $folderService)
     {
         $userID = $request->attributes->get('userId');
         $dir = $request->input('dir');
         $originName = $request->input('originName');
         $newName = $request->input('folderName');
 
-        // Log::info($dir);
-        // Log::info($originName);
-        // Log::info($newName);
+        $result = $folderService->rename($userID, $dir, $originName, $newName);
 
-        $result = FolderService::rename($userID, $dir, $originName, $newName);
-        return response()->json($result[0], $result[1]);
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->json(['message' => $result['msg']], $result['stateCode'])
+        );
     }
 
-    public function deleteFolder(Request $request)
+    public function deleteFolder(Request $request, FolderService $folderService)
     {
         $userID = $request->attributes->get('userId');
         $dir = $request->query('dir');
         $folderName = $request->query('folderName');
 
-        // Log::info($dir);
-        // Log::info($folderName);
+        $result = $folderService->delete($userID, $dir, $folderName);
 
-        $result = FolderService::delete($userID, $dir, $folderName);
-        return response()->json($result[0], $result[1]);
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->json(['size' => $result['size']], $result['stateCode'])
+        );
     }
 }

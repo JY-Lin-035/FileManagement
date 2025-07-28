@@ -3,27 +3,24 @@
 namespace App\Http\Controllers\api;
 
 use App\Models\Accounts;
+use App\Helpers\ReturnHelper;
 use App\Services\ShareService;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-
-use Exception;
 
 class ShareController extends Controller
 {
     public function getList(Request $request, ShareService $shareService)
     {
-        try {
-            $account = Accounts::find($request->attributes->get('userId'));
-            $list = $shareService->getList($account);
+        $account = Accounts::find($request->attributes->get('userId'));
 
-            return response()->json(['share' => $list], 200);
-        } catch (Exception $e) {
-            // Log::info($e);
-            return response()->json(null, 404);
-        }
+        $result = $shareService->getList($account);
+
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->json(['share' => $result['list']], $result['stateCode'])
+        );
     }
 
     public function getLink(Request $request, ShareService $shareService)
@@ -32,43 +29,43 @@ class ShareController extends Controller
         $dir = $request->input('dir');
         $fileName = $request->input('filename');
 
-        $url = $shareService->shareLink($account, $dir, $fileName, null, 'generate');
+        $result = $shareService->shareLink($account, $dir, $fileName, null, 'generate');
 
-        return response()->json($url[0], $url[1]);
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->json($result['url'], $result['stateCode'])
+        );
     }
 
     public function deleteLink(Request $request, ShareService $shareService)
     {
-
         $account = Accounts::find($request->attributes->get('userId'));
         $dir = $request->query('dir');
         $fileName = $request->query('filename');
         $link = $request->query('link');
 
         if ($dir && $fileName) {
-            $url = $shareService->shareLink($account, $dir, $fileName, null, 'signalDelete');
+            $result = $shareService->shareLink($account, $dir, $fileName, null, 'singleDelete');
         } else if ($link) {
-            $url = $shareService->shareLink($account, null, null, $link, 'listDelete');
+            $result = $shareService->shareLink($account, null, null, $link, 'listDelete');
         } else {
-            return response()->json(null, 404);
+            return response()->json(['error' => 'Error'], 404);
         }
-        return response()->json($url[0], $url[1]);
+
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->json($result['msg'], $result['stateCode'])
+        );
     }
 
-    public function downloadFile(Request $request)
+    public function downloadFile(Request $request, ShareService $shareService)
     {
         $link = $request->query('link');
+        $result = $shareService->download($link);
 
-        try {
-            $result = ShareService::download($link);
-
-            if ($result === 404) {
-                return 404;
-            } else {
-                return $result;
-            }
-        } catch (Exception $e) {
-            return 404;
-        }
+        ReturnHelper::controllerReturn(
+            $result,
+            response()->download($result['realPath'], $result['fileName'])
+        );
     }
 }

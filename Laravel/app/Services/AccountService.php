@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\Accounts;
 use App\Jobs\SendRawMail;
+use App\Helpers\LogHelper;
 use App\Services\CheckAccountService;
 
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -33,7 +33,7 @@ class AccountService
             $account->sendEmailVerificationNotification();
         } catch (Exception $err) {
             if ($debug) {
-                Log::debug($err->getMessage());
+                LogHelper::errLog('AccountService-register: ', $err);
                 return ['error' => $err->getMessage(), 'stateCode' => 500];
             } else {
                 return ['error' => 'Error', 'stateCode' => 500];
@@ -69,10 +69,10 @@ class AccountService
             $account->lastSignInDate = now();
             $account->save();
 
-            return $token;
+            return ['token' => $token, 'stateCode' => 200];
         } catch (Exception $err) {
             if ($debug) {
-                Log::debug($err->getMessage());
+                LogHelper::errLog('AccountService-login: ', $err);
                 return ['error' => $err->getMessage(), 'stateCode' => 500];
             } else {
                 return ['error' => 'Error', 'stateCode' => 500];
@@ -106,7 +106,7 @@ class AccountService
             return null;
         } catch (Exception $err) {
             if ($debug) {
-                Log::debug($err->getMessage());
+                LogHelper::errLog('AccountService-modifyMail: ', $err);
                 return ['error' => $err->getMessage(), 'stateCode' => 500];
             } else {
                 return ['error' => 'Error', 'stateCode' => 500];
@@ -128,7 +128,7 @@ class AccountService
             return null;
         } catch (Exception $err) {
             if ($debug) {
-                Log::debug($err->getMessage());
+                LogHelper::errLog('AccountService-modifyPassword: ', $err);
                 return ['error' => $err->getMessage(), 'stateCode' => 500];
             } else {
                 return ['error' => 'Error', 'stateCode' => 500];
@@ -163,7 +163,7 @@ class AccountService
             return null;
         } catch (Exception $err) {
             if ($debug) {
-                Log::debug($err->getMessage());
+                LogHelper::errLog('AccountService-getCode: ', $err);
                 return ['error' => $err->getMessage(), 'stateCode' => 500];
             } else {
                 return ['error' => 'Error', 'stateCode' => 500];
@@ -192,7 +192,7 @@ class AccountService
             return null;
         } catch (Exception $err) {
             if ($debug) {
-                Log::debug($err->getMessage());
+                LogHelper::errLog('AccountService-resetPW: ', $err);
                 return ['error' => $err->getMessage(), 'stateCode' => 500];
             } else {
                 return ['error' => 'Error', 'stateCode' => 500];

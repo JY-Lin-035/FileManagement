@@ -49,7 +49,7 @@ class AccountService
             $err = $check->valLogIn($account, $password);
 
             if ($err) {
-                return $err;
+                return ['error' => $err, 'stateCode' => 500];
             }
 
             $identity = ['user', 'admin'];

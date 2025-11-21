@@ -4,12 +4,12 @@ namespace App\Helpers;
 
 class ReturnHelper
 {
-    public static function controllerReturn(array $result, $successReturn)
+    public static function controllerReturn(array $result, $data)
     {
         if (isset($result['error'])) {
-            return response()->json(['error' => $result['error']], $result['stateCode']);
+            return ['data' => ['error' => $result['error']], 'stateCode' => $result['stateCode']];
         } else {
-            return $successReturn;
+            return ['data' => $data, 'stateCode' => 200];
         }
     }
 }

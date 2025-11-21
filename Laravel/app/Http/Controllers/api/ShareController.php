@@ -17,10 +17,9 @@ class ShareController extends Controller
 
         $result = $shareService->getList($account);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json(['share' => $result['list']], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, ['share' => $result['list']]);
+
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function getLink(Request $request, ShareService $shareService)
@@ -31,10 +30,9 @@ class ShareController extends Controller
 
         $result = $shareService->shareLink($account, $dir, $fileName, null, 'generate');
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json($result['url'], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, $result['url']);
+
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function deleteLink(Request $request, ShareService $shareService)
@@ -52,10 +50,9 @@ class ShareController extends Controller
             return response()->json(['error' => 'Error'], 404);
         }
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json($result['msg'], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, $result['msg']);
+
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function downloadFile(Request $request, ShareService $shareService)
@@ -63,9 +60,10 @@ class ShareController extends Controller
         $link = $request->query('link');
         $result = $shareService->download($link);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->download($result['realPath'], $result['fileName'])
-        );
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->download($result['realPath'], $result['fileName']);
+        }
     }
 }

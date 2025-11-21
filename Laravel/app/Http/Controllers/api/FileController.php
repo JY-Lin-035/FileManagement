@@ -39,10 +39,9 @@ class FileController extends Controller
 
         $result = $folderService->getContent($userID, $folder);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json(['file' => $result['fileList']], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, ['file' => $result['fileList']]);
+        
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function download(Request $request, FileService $fileService)
@@ -53,10 +52,11 @@ class FileController extends Controller
 
         $result = $fileService->download($userID, $dir, $fileName);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->download($result['realPath'], $result['fileName'])
-        );
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->download($result['realPath'], $result['fileName']);
+        }
     }
 
     public function delete(Request $request, FileService $fileService)
@@ -67,10 +67,9 @@ class FileController extends Controller
 
         $result = $fileService->delete($userID, $dir, $fileName);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json(['size' => $result['size']], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, ['size' => $result['size']]);
+
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function uploadFile(Request $request, FileService $fileService)
@@ -92,10 +91,9 @@ class FileController extends Controller
             // return 200;
             $result = $fileService->upload($userID, $dir, $file);
 
-            ReturnHelper::controllerReturn(
-                $result,
-                response()->json(['message' => $result['msg']], $result['stateCode'])
-            );
+            $result = ReturnHelper::controllerReturn($result, ['message' => $result['msg']]);
+
+            return response()->json($result['data'], $result['stateCode']);
         } else {
             return response()->json(null, 403);
         }

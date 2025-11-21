@@ -35,7 +35,8 @@ class FolderService
             $realPath = realpath($path);
 
             if ($realPath === false || !str_contains($realPath, 'app\\private\\users\\' . $userID . '\\' . 'Home')) {
-                return $fileList;
+                // return $fileList;
+                return ['error' => 'Error', 'stateCode' => 404];
             }
 
             foreach (new RecursiveDirectoryIterator($realPath, RecursiveDirectoryIterator::SKIP_DOTS) as $file) {

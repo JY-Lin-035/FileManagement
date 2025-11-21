@@ -19,10 +19,9 @@ class FolderController extends Controller
 
         $result = $folderService->create($userID, $dir, $newName);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json($result['date'], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, $result['date']);
+        
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function renameFolder(Request $request, FolderService $folderService)
@@ -34,10 +33,9 @@ class FolderController extends Controller
 
         $result = $folderService->rename($userID, $dir, $originName, $newName);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json(['message' => $result['msg']], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, ['message' => $result['msg']]);
+
+        return response()->json($result['data'], $result['stateCode']);
     }
 
     public function deleteFolder(Request $request, FolderService $folderService)
@@ -48,9 +46,8 @@ class FolderController extends Controller
 
         $result = $folderService->delete($userID, $dir, $folderName);
 
-        ReturnHelper::controllerReturn(
-            $result,
-            response()->json(['size' => $result['size']], $result['stateCode'])
-        );
+        $result = ReturnHelper::controllerReturn($result, ['size' => $result['size']]);
+
+        return response()->json($result['data'], $result['stateCode']);
     }
 }

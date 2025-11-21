@@ -39,9 +39,11 @@ class FileController extends Controller
 
         $result = $folderService->getContent($userID, $folder);
 
-        $result = ReturnHelper::controllerReturn($result, ['file' => $result['fileList']]);
-        
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['file' => $result['fileList']], 200);
+        }
     }
 
     public function download(Request $request, FileService $fileService)
@@ -67,9 +69,11 @@ class FileController extends Controller
 
         $result = $fileService->delete($userID, $dir, $fileName);
 
-        $result = ReturnHelper::controllerReturn($result, ['size' => $result['size']]);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['size' => $result['size']], $result['stateCode']);
+        }
     }
 
     public function uploadFile(Request $request, FileService $fileService)
@@ -91,9 +95,11 @@ class FileController extends Controller
             // return 200;
             $result = $fileService->upload($userID, $dir, $file);
 
-            $result = ReturnHelper::controllerReturn($result, ['message' => $result['msg']]);
-
-            return response()->json($result['data'], $result['stateCode']);
+            if (isset($result['error'])) {
+                return response()->json(['error' => $result['error']], $result['stateCode']);
+            } else {
+                return response()->json(['message' => $result['msg']], 200);
+            }
         } else {
             return response()->json(null, 403);
         }

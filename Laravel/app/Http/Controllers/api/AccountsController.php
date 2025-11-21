@@ -23,9 +23,11 @@ class AccountsController extends Controller
 
         $result = $accountService->register($username, $email, $password);
 
-        $result = ReturnHelper::controllerReturn($result, ['message' => 'success']);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['message' => 'success'], 200);
+        }
     }
 
     public function login(Request $request, CheckAccountService $check, AccountService $accountService)
@@ -63,9 +65,11 @@ class AccountsController extends Controller
 
         $result = $accountService->modifyMail($account, $mail, $checkMail, $code);
 
-        $result = ReturnHelper::controllerReturn($result, ['email' => MailAddr::lock($mail)]);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['email' => MailAddr::lock($mail)], 200);
+        }
     }
 
     public function modifyPassword(Request $request, AccountService $accountService)
@@ -78,9 +82,11 @@ class AccountsController extends Controller
 
         $result = $accountService->modifyPassword($account, $nowPW, $valNewPW);
 
-        $result = ReturnHelper::controllerReturn($result, ['message' => 'success']);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['message' => 'success'], 200);
+        }
     }
 
     public function getCode(Request $request, AccountService $accountService)
@@ -91,9 +97,11 @@ class AccountsController extends Controller
 
         $result = $accountService->getCode($account, $mail, $mode);
 
-        $result = ReturnHelper::controllerReturn($result, ['message' => '請至信箱查看通知']);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['message' => '請至信箱查看通知'], 200);
+        }
     }
 
     public function resetPW(Request $request, AccountService $accountService)
@@ -107,8 +115,10 @@ class AccountsController extends Controller
 
         $result = $accountService->resetPW($account, $mail, $code, $valPW);
 
-        ReturnHelper::controllerReturn($result, ['message' => 'success']);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['message' => 'success'], 200);
+        }
     }
 }

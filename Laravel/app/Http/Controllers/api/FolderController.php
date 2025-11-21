@@ -19,9 +19,11 @@ class FolderController extends Controller
 
         $result = $folderService->create($userID, $dir, $newName);
 
-        $result = ReturnHelper::controllerReturn($result, $result['date']);
-        
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json($result['date'], 200);
+        }
     }
 
     public function renameFolder(Request $request, FolderService $folderService)
@@ -33,9 +35,11 @@ class FolderController extends Controller
 
         $result = $folderService->rename($userID, $dir, $originName, $newName);
 
-        $result = ReturnHelper::controllerReturn($result, ['message' => $result['msg']]);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['message' => $result['msg']], 200);
+        }
     }
 
     public function deleteFolder(Request $request, FolderService $folderService)
@@ -46,8 +50,10 @@ class FolderController extends Controller
 
         $result = $folderService->delete($userID, $dir, $folderName);
 
-        $result = ReturnHelper::controllerReturn($result, ['size' => $result['size']]);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['size' => $result['size']], 200);
+        }
     }
 }

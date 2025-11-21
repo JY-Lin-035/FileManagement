@@ -148,7 +148,6 @@ class FolderService
                 $account = Accounts::find($userID);
                 $account->usedSize -= $size;
 
-                return [['size' => $size], 200];
                 return ['size' => $size, 'stateCode' => 200];
             }
 

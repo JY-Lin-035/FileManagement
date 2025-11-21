@@ -17,9 +17,11 @@ class ShareController extends Controller
 
         $result = $shareService->getList($account);
 
-        $result = ReturnHelper::controllerReturn($result, ['share' => $result['list']]);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json(['share' => $result['list']], $result['stateCode']);
+        }
     }
 
     public function getLink(Request $request, ShareService $shareService)
@@ -30,9 +32,11 @@ class ShareController extends Controller
 
         $result = $shareService->shareLink($account, $dir, $fileName, null, 'generate');
 
-        $result = ReturnHelper::controllerReturn($result, $result['url']);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json($result['url'], $result['stateCode']);
+        }
     }
 
     public function deleteLink(Request $request, ShareService $shareService)
@@ -50,9 +54,11 @@ class ShareController extends Controller
             return response()->json(['error' => 'Error'], 404);
         }
 
-        $result = ReturnHelper::controllerReturn($result, $result['msg']);
-
-        return response()->json($result['data'], $result['stateCode']);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['stateCode']);
+        } else {
+            return response()->json($result['msg'], $result['stateCode']);
+        }
     }
 
     public function downloadFile(Request $request, ShareService $shareService)
